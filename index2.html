@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Portfolio App</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      text-align: center;
+    }
+
+    .container {
+      margin-top: 80px;
+      background: white;
+      padding: 20px;
+      display: inline-block;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    input {
+      margin: 10px;
+      padding: 10px;
+      width: 90%;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: blue;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: darkblue;
+    }
+
+    #dashboard {
+      display: none;
+      margin-top: 20px;
+    }
+
+    img {
+      width: 120px;
+      border-radius: 50%;
+      margin: 10px;
+    }
+
+    #certificates img {
+      width: 120px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username"><br>
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <h2>Dashboard</h2>
+  <button onclick="logout()">Logout</button>
+
+  <!-- NAVIGATION -->
+  <div style="margin-top:20px;">
+    <button onclick="showSection('home')">Home</button>
+    <button onclick="showSection('skills')">Skills</button>
+    <button onclick="showSection('certifications')">Certifications</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="home" class="section">
+    <h3>iam Meher Surya</h3>
+    <img id="displayPic" src="me2.jpeg">
+  </div>
+
+  <!-- SKILLS -->
+  <div id="skills" class="section" style="display:none;">
+    <h3>Web Development Skills</h3>
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+      <li>JavaScript</li>
+      <li>Responsive Design</li>
+      <li>Git & GitHub</li>
+      <li>React (Basics)</li>
+    </ul>
+  </div>
+
+  <!-- CERTIFICATIONS -->
+  <div id="certifications" class="section" style="display:none;">
+    <h3>Upload Certificates</h3>
+    <input type="file" id="certificate">
+    <button onclick="uploadCertificate()">Upload</button>
+
+    <div id="certificates"></div>
+  </div>
+</div>
+
+
+<script>
+  function login() {
+    let user = document.getElementById("username").value;
+    let pass = document.getElementById("password").value;
+
+    if (user === "admin" && pass === "1234") {
+      localStorage.setItem("loggedIn", "true");
+      showDashboard();
+    } else {
+      alert("Invalid login!");
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    location.reload();
+  }
+
+  function showDashboard() {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+    loadProfile();
+    displayCertificates();
+  }
+
+  // PROFILE
+
+  // CERTIFICATES
+  function uploadCertificate() {
+    let file = document.getElementById("certificate").files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      let certs = JSON.parse(localStorage.getItem("certificates")) || [];
+      certs.push(e.target.result);
+      localStorage.setItem("certificates", JSON.stringify(certs));
+      displayCertificates();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function displayCertificates() {
+    let certs = JSON.parse(localStorage.getItem("certificates")) || [];
+    let container = document.getElementById("certificates");
+    container.innerHTML = "";
+
+    certs.forEach(cert => {
+      let img = document.createElement("img");
+      img.src = cert;
+      container.appendChild(img);
+    });
+  }
+function showSection(sectionId) {
+  let sections = document.querySelectorAll(".section");
+  sections.forEach(sec => sec.style.display = "none");
+
+  document.getElementById(sectionId).style.display = "block";
+}
+  // AUTO LOGIN
+  if (localStorage.getItem("loggedIn")) {
+    showDashboard();
+  }
+</script>
+
+</body>
+</html>
